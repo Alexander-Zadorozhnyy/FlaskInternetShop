@@ -1,0 +1,29 @@
+def main():
+    db_session.global_init("db/shop_info.db")
+    '''user = User()
+    user.name = "Пользователь 1"
+    user.email = "emailsdffsdfgsdfsdfsdf@email.ru"
+    user.hashed_password = '123456'
+    db_sess = db_session.create_session()
+    db_sess.add(user)
+    db_sess.commit()'''
+    db_sess = db_session.create_session()
+    for user in db_sess.query(User).all():
+        print(user)
+    '''for user in db_sess.query(User).filter((User.id > 1) | (User.email.notilike("%1%"))):
+        print(user)'''
+    '''db_sess.query(User).filter(User.id >= 3).delete()
+    db_sess.commit() удаление'''
+    basket = Basket(title="Первая телефон", content="img",
+                    user_id=1)
+    db_sess.add(Basket)
+    db_sess.commit()
+    user = db_sess.query(User).filter(User.id == 1).first()
+    basket = Basket(title="2 телефон", content="img")
+    user.news.append(basket)
+    db_sess.commit()  # добавление новости
+    for user in db_sess.query(User).all():
+        for news in user.news:
+            print(news)
+    db_sess.commit()
+    app.run(debug=True)

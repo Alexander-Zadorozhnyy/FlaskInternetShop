@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block body %}
+<main>
+    <div class="card mb-3" style="max-width: 1600px;">
+      <div class="row no-gutters">
+        <div class="col-md-4">
+          <img src="/static/img/{{ image }}" class="card-img" alt="...">
+            <a style="margin-left:80px;margin-top:20px;font-size:25px;" type="button" class="btn btn-success btn-lg" href="/buy_item/{{ id }}">Купить</a>
+            <a style="margin-left:10px;margin-top:20px;font-size:25px;" type="button" class="btn btn-warning btn-lg" href="/add_to_basket/{{ id }}">Добавить в корзину</a>
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">Основные характеристики</h5>
+              {% for el in range(0, count, 2) %}
+                    <div class="card text-white bg-info mb-3" style="max-width: 1000px;">
+                        <div class="card-body">
+                            <p class="card-text">{{ characteristics[el] }}  :   {{ characteristics[el + 1] }}</p>
+                        </div>
+                    </div>
+              {% endfor %}
+            </div>
+        </div>
+      </div>
+    </div>
+</main>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block body %}
+<div style="background-image:url('/static/img/tech.jpg');background-size:100%;">
+<h1 style="color:#FFFAFA;">Техническая поддержка</h1>
+<form style="opacity:0.6;color:white;" action="" method="post">
+    {{ form.hidden_tag() }}
+    <p>
+        {{ form.email.label }}<br>
+        {{ form.email(class="form-control", type="email") }}<br>
+        {% for error in form.email.errors %}
+            <p class="alert alert-danger" role="alert">
+                {{ error }}
+            </p>
+        {% endfor %}
+    </p>
+    <p>
+        {{ form.theme(class="form-control") }}<br>
+        {% for error in form.theme.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>
+        {{ form.question.label }}<br>
+        {{ form.question(class="form-control") }}<br>
+        {% for error in form.question.errors %}
+    <p class="alert alert-danger" role="alert">
+        {{ error }}
+    </p>
+    {% endfor %}
+    </p>
+    <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+    {{message}}
+    <br><br><br>
+</form>
+    </div>
+{% endblock %}
