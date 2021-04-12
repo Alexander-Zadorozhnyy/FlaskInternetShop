@@ -1,3 +1,5 @@
+import json
+
 from flask import jsonify, request
 from flask_restful import reqparse, abort, Api, Resource
 
@@ -7,6 +9,9 @@ from Flask_2.data.shop_items import Items
 
 from Flask_2.data import db_session
 from Flask_2.data.api.regparse import parser
+from Flask_2.data.support_question import Questions
+from Flask_2.data.theme_questions import Themes
+from Flask_2.data.users import User
 
 
 def abort_if_news_not_found(items_id):
@@ -42,7 +47,11 @@ class ItemsListResource(Resource):
         return jsonify(
             {
                 'items':
-                    [(item.to_dict(only=('id', 'name', 'content', 'characteristics', 'price')), session.query(Category.name).filter(Category.id == session.query(category_to_items.c.category).filter(category_to_items.c.item == str(item).split('-')[1]).first()[0]).first()[0])
+                    [(item.to_dict(only=('id', 'name', 'content', 'characteristics', 'price')),
+                      session.query(Category.name).filter(Category.id ==
+                                                          session.query(category_to_items.c.category).filter(
+                                                              category_to_items.c.item == str(item).split('-')[
+                                                                  1]).first()[0]).first()[0])
                      for item in news],
             }
         )
@@ -57,7 +66,11 @@ class ItemsListResource(Resource):
             characteristics=args['characteristics'],
             price=args['price']
         )
-        item.categories.append(session.query(Category).filter(Category.name == request.json['category']).first())
+        with open(f"static/img/{args['content']}", 'wb') as f:
+            f.write(args['img'].encode('latin1'))
+        '''write_to_file(args['img'], args['img_name'])'''
+        print(session.query(Category.id).first()[0])
+        item.categories.append(session.query(Category).filter(Category.name == args['category']).first())
         session.add(item)
         session.commit()
         return jsonify({'success': 'OK'})
@@ -86,12 +99,35 @@ class CategoryListResource(Resource):
         return jsonify({'success': 'OK'})
 
 
-class ImageRecource(Resource):
-    def get(self, items_id):
+class QuestionsListResource(Resource):
+    def get(self):
         session = db_session.create_session()
-        news = session.query(Items.image).filter(Items.id == items_id).first()[0]
-        write_to_file(news, 'game.jpg')
-        print(str(news))
-        bt = bytes(str(news), encoding='utf-8')
-        write_to_file(bt, 'game_1.jpg')
-        return jsonify({'image': str(news)})
+        news = session.query(User.name, User.email, Questions.question, Themes.theme).filter(
+            User.id == Questions.user_id).filter(Questions.theme_id == Themes.id).all()
+        print(news)
+        data = {}
+        for item in news:
+            new_data = {'name': item[0],
+                        'email': item[1],
+                        'question': item[2],
+                        'theme': item[3]}
+        return jsonify(
+            {
+                'questions':
+                    [{'name': item[0],
+                        'email': item[1],
+                        'question': item[2],
+                        'theme': item[3]} for item in news]
+            }
+        )
+
+
+    def post(self):
+        args = parser.parse_args()
+        session = db_session.create_session()
+        item = Category(
+            name=args['name']
+        )
+        session.add(item)
+        session.commit()
+        return jsonify({'success': 'OK'})

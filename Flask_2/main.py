@@ -34,7 +34,8 @@ def main():
     api.add_resource(items_recources.ItemsListResource, '/api/v2/items')
     api.add_resource(items_recources.ItemsResource, '/api/v2/items/<int:items_id>')
     api.add_resource(items_recources.CategoryListResource, '/api/v2/categories')
-    api.add_resource(items_recources.ImageRecource, '/api/v2/image/<int:items_id>')
+    api.add_resource(items_recources.QuestionsListResource, '/api/v2/questions')
+
     """create_item(content='AppleWatch.jpg', name='Apple Watch S5', about='Смарт-часы APPLE Watch Series 5 Nike+, 40мм, серый космос / антрацитовый/черный', characteristics='''Описание%
 С новым дисплеем, который всегда остаётся включённым, Apple Watch Series 5 — ваш самый преданный помощник. Различные циферблаты и расширения позволяют узнавать информацию, не поднимая запястье. Корпус Apple Watch 5 впервые изготовлен с применением только переработанного алюминия.%
 Процессор%
@@ -78,9 +79,6 @@ OLED, , 368 х 448 точек%
 def index():
     db_sess = db_session.create_session()
     items = [str(item).split('-') for item in db_sess.query(Items).all()]
-    for i in items:
-        write_to_file(bytes(str(db_sess.query(Items.image).filter(Items.id == i[1]).first()[0])[1:-1], 'raw_unicode_escape'), i[4])
-    print(items)
 
     return render_template("index.html", count=len(items), all_types=ALL_TYPES, items=items)  # , items=items
 

@@ -42,7 +42,7 @@ def delete_item(item_id):
 
 def write_to_file(data, filename):
     # возможная проблема дата
-    print(data)
+    print(type(data))
     file_path = f"static/img/{filename}"
 
     import os.path
