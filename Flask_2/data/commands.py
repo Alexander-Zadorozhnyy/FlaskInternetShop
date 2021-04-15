@@ -57,6 +57,7 @@ def write_to_file(data, filename):
 
 
 def convert_to_binary_data(filename):
+
     # Преобразование данных в двоичный формат
     with open(filename, 'rb') as file:
         blob_data = file.read()

@@ -62,6 +62,7 @@ def create_news():
     return jsonify({'success': 'OK'})
 
 
+
 @blueprint.route('/api/items/<int:news_id>', methods=['DELETE'])
 def delete_news(news_id):
     db_sess = db_session.create_session()

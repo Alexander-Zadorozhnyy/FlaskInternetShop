@@ -26,5 +26,6 @@ with open('photo.jpg', 'rb') as f:
     a = f.read()
 a = a.decode('latin1')
 a = a.encode('latin1')
+
 with open('good.jpg', 'wb') as file:
     file.write(a)

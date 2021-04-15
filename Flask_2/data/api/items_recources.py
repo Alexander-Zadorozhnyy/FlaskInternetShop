@@ -115,12 +115,11 @@ class QuestionsListResource(Resource):
             {
                 'questions':
                     [{'name': item[0],
-                        'email': item[1],
-                        'question': item[2],
-                        'theme': item[3]} for item in news]
+                      'email': item[1],
+                      'question': item[2],
+                      'theme': item[3]} for item in news]
             }
         )
-
 
     def post(self):
         args = parser.parse_args()
