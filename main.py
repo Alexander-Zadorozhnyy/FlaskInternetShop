@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, render_template, redirect, flash, make_response, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_restful import Api
@@ -238,7 +240,8 @@ def basket_show():
 def add_to_basket(id_item):
     if current_user.is_authenticated:
         db_sess = db_session.create_session()
-        if not db_sess.query(Basket.item_id).filter(Basket.user_id == current_user.id).filter(Basket.item_id == id_item).first():
+        if not db_sess.query(Basket.item_id).filter(Basket.user_id == current_user.id).filter(
+                Basket.item_id == id_item).first():
             bas = Basket(item_id=id_item, user_id=current_user.id)
             db_sess.add(bas)
             db_sess.commit()
@@ -254,5 +257,7 @@ def add_to_basket(id_item):
 def buy_item(id_item):
     return redirect("/")
 
+
 if __name__ == '__main__':
-    main()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
