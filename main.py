@@ -2,16 +2,16 @@ from flask import Flask, render_template, redirect, flash, make_response, jsonif
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_restful import Api
 
-from Flask_2.data import db_session, items_api
-from Flask_2.data.api import items_recources
-from Flask_2.data.basket import Basket
-from Flask_2.data.category import Category, category_to_items
-from Flask_2.data.commands import create_item, create_basket, edit_item, delete_item, write_to_file
-from Flask_2.data.support_question import Questions
-from Flask_2.data.theme_questions import Themes
-from Flask_2.data.users import User
-from Flask_2.data.shop_items import Items
-from Flask_2.forms.user import RegisterForm, SupportForm, LoginForm
+from data import db_session, items_api
+from data.api import items_recources
+from data.basket import Basket
+from data.category import Category, category_to_items
+from data.commands import create_item, create_basket, edit_item, delete_item, write_to_file
+from data.support_question import Questions
+from data.theme_questions import Themes
+from data.users import User
+from data.shop_items import Items
+from forms.user import RegisterForm, SupportForm, LoginForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'

@@ -3,16 +3,16 @@ import json
 from flask import jsonify, request
 from flask_restful import reqparse, abort, Api, Resource
 
-from Flask_2.data.basket import Basket
-from Flask_2.data.category import Category, category_to_items
-from Flask_2.data.commands import write_to_file
-from Flask_2.data.shop_items import Items
+from data.basket import Basket
+from data.category import Category, category_to_items
+from data.commands import write_to_file
+from data.shop_items import Items
 
-from Flask_2.data import db_session
-from Flask_2.data.api.regparse import parser, parser_for_basket
-from Flask_2.data.support_question import Questions
-from Flask_2.data.theme_questions import Themes
-from Flask_2.data.users import User
+from data import db_session
+from data.api.regparse import parser, parser_for_basket
+from data.support_question import Questions
+from data.theme_questions import Themes
+from data.users import User
 
 
 def abort_if_news_not_found(items_id):

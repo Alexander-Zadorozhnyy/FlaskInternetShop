@@ -1,9 +1,9 @@
 import flask
 from flask import jsonify
 
-from Flask_2.data import db_session
-from Flask_2.data.category import Category
-from Flask_2.data.shop_items import Items
+from data import db_session
+from data.category import Category
+from data.shop_items import Items
 
 blueprint = flask.Blueprint(
     'items_api',

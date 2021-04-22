@@ -1,7 +1,7 @@
-from Flask_2.data import db_session
-from Flask_2.data.category import Category
-from Flask_2.data.shop_items import Items
-from Flask_2.data.users import User
+from data import db_session
+from data.category import Category
+from data.shop_items import Items
+from data.users import User
 
 
 def create_basket(title, content, user_id):
