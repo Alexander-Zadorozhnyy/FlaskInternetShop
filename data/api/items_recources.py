@@ -60,6 +60,8 @@ class ItemsListResource(Resource):
     def post(self):
         args = parser.parse_args()
         session = db_session.create_session()
+        with open(f"static/img/{args['content']}", 'wb') as f:
+            f.write(args['img'].encode('latin1'))
         item = Items(
             name=args['name'],
             content=args['content'],
@@ -67,8 +69,6 @@ class ItemsListResource(Resource):
             characteristics=args['characteristics'],
             price=args['price']
         )
-        with open(f"static/img/{args['content']}", 'wb') as f:
-            f.write(args['img'].encode('latin1'))
         item.categories.append(session.query(Category).filter(Category.name == args['category']).first())
         session.add(item)
         session.commit()

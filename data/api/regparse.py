@@ -11,5 +11,5 @@ parser.add_argument('price', required=True)
 
 
 parser_for_basket = reqparse.RequestParser()
-parser.add_argument('id_user', required=True)
-parser.add_argument('id_item', required=True)
+parser_for_basket.add_argument('id_user', required=True)
+parser_for_basket.add_argument('id_item', required=True)
