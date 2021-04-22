@@ -4,7 +4,7 @@ from flask import Flask, render_template, redirect, flash, make_response, jsonif
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_restful import Api
 
-from data import db_session, items_api
+from data import db_session
 from data.api import items_recources
 from data.basket import Basket
 from data.category import Category, category_to_items
@@ -20,6 +20,7 @@ app.config['SECRET_KEY'] = 'yandexlyceum_secret_key'
 login_manager = LoginManager()
 login_manager.init_app(app)
 api = Api(app)
+db_sess = None
 
 ALL_TYPES = ['bg-dark me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden',
              'bg-light me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden',
@@ -30,58 +31,9 @@ ALL_TYPES = ['bg-dark me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white o
              ]
 
 
-def main():
-    db_session.global_init("db/shop_info.db")
-    db_sess = db_session.create_session()
-    api.add_resource(items_recources.ItemsListResource, '/api/v2/items')
-    api.add_resource(items_recources.ItemsResource, '/api/v2/items/<int:items_id>')
-    api.add_resource(items_recources.CategoryListResource, '/api/v2/categories')
-    api.add_resource(items_recources.QuestionsListResource, '/api/v2/questions')
-    api.add_resource(items_recources.BasketsListResource, '/api/v2/baskets')
-    api.add_resource(items_recources.UsersListResource, '/api/v2/users')
-
-    """create_item(content='AppleWatch.jpg', name='Apple Watch S5', about='Смарт-часы APPLE Watch Series 5 Nike+, 40мм, серый космос / антрацитовый/черный', characteristics='''Описание%
-С новым дисплеем, который всегда остаётся включённым, Apple Watch Series 5 — ваш самый преданный помощник. Различные циферблаты и расширения позволяют узнавать информацию, не поднимая запястье. Корпус Apple Watch 5 впервые изготовлен с применением только переработанного алюминия.%
-Процессор%
-S5, двухъядерный%
-Операционная система%
-Watch OS%
-Объем постоянной памяти%
-32 ГБ%
-Дисплей%
-OLED, , 368 х 448 точек%
-Сенсорный дисплей%
-да%
-Размер корпуса%
-40 мм%''', price=31290, category='Часы')"""
-    """create_item(content='ipad.jpg', name='APPLE iPad', about='Планшет APPLE iPad 2020 32Gb Wi_Fi + Cellular MYMK2RU/A, 32GB, 3G, 4G, iOS золотистый',
-                characteristics='''Описание%
-С новым дисплеем, который всегда остаётся включённым, Apple Watch Series 5 ваш самый преданный помощник. Различные циферблаты и расширения позволяют узнавать информацию, не поднимая запястье. Корпус Apple Watch 5 впервые изготовлен с применением только переработанного алюминия.%
-Процессор%
-S5, двухъядерный%
-Операционная система%
-Watch OS%
-Объем постоянной памяти%
-32 ГБ%
-Дисплей%
-OLED, , 368 х 448 точек%
-Сенсорный дисплей%
-да%
-Размер корпуса%
-40 мм''',
-                price=40490, category='Планшеты')"""
-    '''edit_item(1, content='iphone_10.jpg')
-    edit_item(2, content='iphone_11.jpg')
-    edit_item(3, content='samsung_s10.jpeg', name='Samsung S10')
-    edit_item(4, content='samsung_a40.jpeg', name='Samsung A40')
-    edit_item(5, content='xiaomi_redmi_8a.jpg', name='Xiaomi Redmi 8A')'''
-    app.run(debug=True)
-
-
 @app.route('/')
 @app.route('/index')
 def index():
-    db_sess = db_session.create_session()
     items = [str(item).split('-') for item in db_sess.query(Items).all()]
 
     return render_template("index.html", count=len(items), all_types=ALL_TYPES, items=items)  # , items=items
@@ -89,8 +41,8 @@ def index():
 
 @app.route('/support', methods=['GET', 'POST'])
 def support():
+    global db_sess
     form = SupportForm()
-    db_sess = db_session.create_session()
     form.theme.choices = [(theme.id, theme.theme) for theme in db_sess.query(Themes).all()]
     if form.validate_on_submit():
         if db_sess.query(User).filter(User.email == form.email.data).first():
@@ -111,13 +63,13 @@ def support():
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    global db_sess
     form = RegisterForm()
     if form.validate_on_submit():
         if form.password.data != form.password_again.data:
             return render_template('register.html', title='Регистрация',
                                    form=form,
                                    message="Пароли не совпадают")
-        db_sess = db_session.create_session()
         if db_sess.query(User).filter(User.email == form.email.data).first():
             return render_template('register.html', title='Регистрация',
                                    form=form,
@@ -136,7 +88,6 @@ def register():
 
 @login_manager.user_loader
 def load_user(user_id):
-    db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
 
@@ -150,7 +101,6 @@ def login():
     global user
     form = LoginForm()
     if form.validate_on_submit():
-        db_sess = db_session.create_session()
         user = db_sess.query(User).filter(User.email == form.email.data).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
@@ -170,7 +120,6 @@ def logout():
 
 @app.route('/filtred_items/<string:type_item>')
 def filtred_items(type_item):
-    db_sess = db_session.create_session()
     category, type_search = None, None
     filter_types = ['bg-dark me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center text-white overflow-hidden',
                     'bg-light me-md-3 pt-3 px-3 pt-md-5 px-md-5 text-center overflow-hidden',
@@ -199,7 +148,6 @@ def filtred_items(type_item):
 
 @app.route('/more/<int:id>', methods=['GET', 'POST'])
 def more(id):
-    db_sess = db_session.create_session()
     item = db_sess.query(Items).filter(Items.id == id).first()
     characteristics = item.characteristics.split('%')
     img = item.content
@@ -228,18 +176,16 @@ def more(id):
 @app.route('/basket', methods=['GET', 'POST'])
 def basket_show():
     if current_user.is_authenticated:
-        db_sess = db_session.create_session()
         id_items = [item[0] for item in
                     db_sess.query(Basket.item_id).filter(Basket.user_id == current_user.id).all()]
-        print(id_items)
         items = [str(item).split('-') for item in db_sess.query(Items).filter(Items.id.in_(id_items)).all()]
         return render_template("basket.html", items=items, count=len(items))
 
 
 @app.route('/add_to_basket/<int:id_item>', methods=['GET', 'POST'])
 def add_to_basket(id_item):
+    global db_sess
     if current_user.is_authenticated:
-        db_sess = db_session.create_session()
         if not db_sess.query(Basket.item_id).filter(Basket.user_id == current_user.id).filter(
                 Basket.item_id == id_item).first():
             bas = Basket(item_id=id_item, user_id=current_user.id)
@@ -259,5 +205,14 @@ def buy_item(id_item):
 
 
 if __name__ == '__main__':
+    global db_sess
+    db_session.global_init("db/shop_info.db")
+    db_sess = db_session.create_session()
+    api.add_resource(items_recources.ItemsListResource, '/api/v2/items')
+    api.add_resource(items_recources.ItemsResource, '/api/v2/items/<int:items_id>')
+    api.add_resource(items_recources.CategoryListResource, '/api/v2/categories')
+    api.add_resource(items_recources.QuestionsListResource, '/api/v2/questions')
+    api.add_resource(items_recources.BasketsListResource, '/api/v2/baskets')
+    api.add_resource(items_recources.UsersListResource, '/api/v2/users')
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
