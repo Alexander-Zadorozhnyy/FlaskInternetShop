@@ -205,7 +205,6 @@ def buy_item(id_item):
 
 
 if __name__ == '__main__':
-    global db_sess
     db_session.global_init("db/shop_info.db")
     db_sess = db_session.create_session()
     api.add_resource(items_recources.ItemsListResource, '/api/v2/items')
