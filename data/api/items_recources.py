@@ -9,7 +9,7 @@ from data.commands import write_to_file
 from data.shop_items import Items
 
 from data import db_session
-from data.api.regparse import parser, parser_for_basket
+from data.api.regparse import parser, parser_for_basket, parser_for_question
 from data.support_question import Questions
 from data.theme_questions import Themes
 from data.users import User
@@ -20,6 +20,13 @@ def abort_if_news_not_found(items_id):
     news = session.query(Items).get(items_id)
     if not news:
         abort(404, message=f"Items {items_id} not found")
+
+
+def abort_if_question_not_found(items_id):
+    session = db_session.create_session()
+    news = session.query(Questions).get(items_id)
+    if not news:
+        abort(404, message=f"Question {items_id} not found")
 
 
 class ItemsResource(Resource):
@@ -114,12 +121,24 @@ class QuestionsListResource(Resource):
         )
 
     def post(self):
-        args = parser.parse_args()
+        args = parser_for_question.parse_args()
         session = db_session.create_session()
-        item = Category(
-            name=args['name']
+        item = Questions(
+            question=args['question'],
+            theme_id=session.query(Themes.id).filter(Themes.theme == args['theme']).first()[0],
+            user_id=session.query(User.id).filter(User.email == args['email']).first()[0]
         )
         session.add(item)
+        session.commit()
+        return jsonify({'success': 'OK'})
+
+
+class QuestionResource(Resource):
+    def delete(self, question_id):
+        abort_if_question_not_found(question_id)
+        session = db_session.create_session()
+        quest = session.query(Questions).get(question_id)
+        session.delete(quest)
         session.commit()
         return jsonify({'success': 'OK'})
 
