@@ -22,11 +22,11 @@ def abort_if_news_not_found(items_id):
         abort(404, message=f"Items {items_id} not found")
 
 
-def abort_if_question_not_found(items_id):
+def abort_if_question_not_found(question_id):
     session = db_session.create_session()
-    news = session.query(Questions).get(items_id)
+    news = session.query(Questions).get(question_id)
     if not news:
-        abort(404, message=f"Question {items_id} not found")
+        abort(404, message=f"Question {question_id} not found")
 
 
 class ItemsResource(Resource):
@@ -136,7 +136,6 @@ class QuestionsListResource(Resource):
 
 class QuestionResource(Resource):
     def delete(self, question_id):
-        abort_if_question_not_found(question_id)
         session = db_session.create_session()
         quest = session.query(Questions).get(question_id)
         session.delete(quest)
