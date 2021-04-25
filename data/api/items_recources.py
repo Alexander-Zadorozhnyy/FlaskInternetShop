@@ -108,7 +108,7 @@ class CategoryListResource(Resource):
 class QuestionsListResource(Resource):
     def get(self):
         session = db_session.create_session()
-        news = session.query(User.name, User.email, Questions.question, Themes.theme).filter(
+        news = session.query(User.name, User.email, Questions.question, Themes.theme, Questions.id).filter(
             User.id == Questions.user_id).filter(Questions.theme_id == Themes.id).all()
         return jsonify(
             {
@@ -116,7 +116,8 @@ class QuestionsListResource(Resource):
                     [{'name': item[0],
                       'email': item[1],
                       'question': item[2],
-                      'theme': item[3]} for item in news]
+                      'theme': item[3],
+                      'id':item[4]} for item in news]
             }
         )
 

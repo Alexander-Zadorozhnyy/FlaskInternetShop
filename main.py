@@ -213,5 +213,6 @@ if __name__ == '__main__':
     api.add_resource(items_recources.QuestionsListResource, '/api/v2/questions')
     api.add_resource(items_recources.BasketsListResource, '/api/v2/baskets')
     api.add_resource(items_recources.UsersListResource, '/api/v2/users')
+    api.add_resource(items_recources.QuestionResource, '/api/v2/question/<int:question_id>')
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
