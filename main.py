@@ -204,6 +204,21 @@ def buy_item(id_item):
     return redirect("/")
 
 
+@app.route('/del_from_basket/<int:id_item>', methods=['GET', 'POST'])
+def del_from_basket(id_item):
+    global db_sess
+    if current_user.is_authenticated:
+        idie = db_sess.query(Basket.item_id).filter(Basket.user_id == current_user.id).filter(
+            Basket.item_id == id_item).first()[0]
+        item = db_sess.query(Items).get(idie)
+        db_sess.delete(item)
+        db_sess.commit()
+        flash("Товар успешно удален из вашей корзины.")
+    else:
+        flash("Для начала войдите в вашу учётную запись для добавления товара в карзину.")
+    return redirect("/")
+
+
 if __name__ == '__main__':
     db_session.global_init("db/shop_info.db")
     db_sess = db_session.create_session()
