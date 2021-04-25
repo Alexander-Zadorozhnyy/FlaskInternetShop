@@ -216,7 +216,7 @@ def del_from_basket(id_item):
         flash("Товар успешно удален из вашей корзины.")
     else:
         flash("Для начала войдите в вашу учётную запись для добавления товара в карзину.")
-    return redirect("/")
+    return redirect("/basket")
 
 
 if __name__ == '__main__':
